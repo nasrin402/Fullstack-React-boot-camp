@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 const Form = () => {
   const initialState = {
     first_name: "",
     last_name: "",
     birthday: "",
-    gender: "",
+    gender: "male",
     email: "",
     phone: "",
     password: "",
@@ -13,17 +13,86 @@ const Form = () => {
     profession:""
   };
   const [userData, setUserData] = useState(initialState);
-  
+  const [error, setError] = useState(null);
+  const nameRef = useRef(null);
   const handleChange = (e) => {
-    console.log("name --> value", e.target.name, e.target.value);
+   // console.log("name --> value", e.target.name, e.target.value);
     setUserData({
         ...userData,
         [e.target.name]: e.target.value
     })
+    setError({
+      ...error, 
+      [e.target.name]: ''
+    })
   };
   const handleSubmit = (e) => {
-    const 
+    e.preventDefault();
+    //console.log("Name reference--->", nameRef.current.value)
+    nameRef.current.focus();
+    const {first_name,
+    last_name,
+    birthday,
+    email,
+    phone,
+    password,
+    c_password,
+    profession} = userData
+
+    let isError = false;
+    const initialError = {
+      first_name: "",
+    last_name: "",
+    birthday: "",
+    email: "",
+    phone: "",
+    password: "",
+    c_password: "",
+    profession:""
+    }
+    
+    if(first_name === ''){
+      initialError.first_name = "First name must be required";
+      isError = true;
+    }
+    if(last_name === ''){
+      initialError.last_name = "Last name must be required";
+      isError = true;
+    }
+    if(birthday === ''){
+      initialError.birthday = "Date must be selected";
+      isError = true;
+    }
+    const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    if(email === '' || !validEmail.test(email)){
+      initialError.email = "Email must be required and valid";
+      isError = true;
+    }
+    const validPhn = /^(?:\+88|88)?(01[3-9]\d{8})$/
+    if(phone === '' || !validPhn.test(phone)){
+      initialError.phone = "Phone number must be valid";
+      isError = true;
+    }
+    const strongPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
+    if(password === '' || !strongPass.test(password)){
+      initialError.password = "Password  must be 8 characters or longer,at least 1 lowercase, 1 Uppercase alphabetical character, 1 numeric number";
+      isError = true;
+    }
+    if( c_password === '' || c_password !== password){
+      initialError.c_password = "Must be same with the password";
+      isError = true;
+    }
+    if( profession === '' ){
+      initialError.profession = "Must be selected";
+      isError = true;
+    }
+    setError(initialError);
+    if(isError) return;
+
+   alert("your form is submitted.")
+   setUserData(initialState);
   };
+
   const {  first_name,
   last_name,
   birthday,
@@ -32,6 +101,7 @@ const Form = () => {
   phone,
   password,
   c_password,profession} = userData;
+  
   return (
     <div
       className="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins"
@@ -52,7 +122,9 @@ const Form = () => {
                       name="first_name"
                       onChange={handleChange}
                       value={first_name}
+                      ref={nameRef}
                     />
+                    <p style={{color:"red"}}>{error && error.first_name}</p>
                   </div>
                 </div>
                 <div className="col-2">
@@ -65,6 +137,7 @@ const Form = () => {
                       onChange={handleChange}
                       value={last_name}
                     />
+                    <p style={{color:"red"}}>{error && error.last_name}</p>
                   </div>
                 </div>
               </div>
@@ -75,11 +148,12 @@ const Form = () => {
                     <div className="input-group-icon">
                       <input
                         className="input--style-4 "
-                        type="text"
+                        type="date"
                         name="birthday"
                         onChange={handleChange}
                         value={birthday}
                       />
+                      <p style={{color:"red"}}>{error && error.birthday}</p>
                     </div>
                   </div>
                 </div>
@@ -123,6 +197,7 @@ const Form = () => {
                       onChange={handleChange}
                       value={email}
                     />
+                    <p style={{color:"red"}}>{error && error.email}</p>
                   </div>
                 </div>
                 <div className="col-2">
@@ -135,6 +210,7 @@ const Form = () => {
                       onChange={handleChange}
                       value={phone}
                     />
+                    <p style={{color:"red"}}>{error && error.phone}</p>
                   </div>
                 </div>
               </div>
@@ -144,11 +220,12 @@ const Form = () => {
                     <label className="label">Password</label>
                     <input
                       className="input--style-4"
-                      type="text"
+                      type="password"
                       name="password"
                       onChange={handleChange}
                       value={password}
                     />
+                    <p style={{color:"red"}}>{error && error.password}</p>
                   </div>
                 </div>
                 <div className="col-2">
@@ -156,11 +233,12 @@ const Form = () => {
                     <label className="label">Confirm Password</label>
                     <input
                       className="input--style-4"
-                      type="text"
+                      type="password"
                       name="c_password"
                       onChange={handleChange}
                       value={c_password}
                     />
+                    <p style={{color:"red"}}>{error && error.c_password}</p>
                   </div>
                 </div>
               </div>
@@ -178,6 +256,7 @@ const Form = () => {
                     </option>
                     <option value="ui designer">UI designer</option>
                   </select>
+                  <p style={{color:"red"}}>{error && error.profession}</p>
                 </div>
               </div>
 
